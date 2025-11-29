@@ -14,7 +14,7 @@ def ask_gpt(prompt: str = Query(...)):
     print(">>> PROMPT FROM CLIENT:", prompt)
 
     completion = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4.1",
         messages=[
             {"role": "user", "content": prompt}
         ]
