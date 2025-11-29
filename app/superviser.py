@@ -1,95 +1,52 @@
-from dataclasses import dataclass
-from typing import TypedDict, List
-from pathlib import Path
-import json
-import time
-
+from typing import List, TypedDict
 from openai import OpenAI
+import json
+from pathlib import Path
+import time
 
 
 class WorkerSubTask(TypedDict):
-    type: str      # метка виртуального "воркера"
-    prompt: str    # ПОЛНЫЙ промпт для LLM
-
-
-@dataclass
-class SupervisionResult:
-    raw_query: str
-    subtasks: list[WorkerSubTask]
+    type: str
+    prompt: str
 
 
 class Supervisor:
-    def __init__(self, client: OpenAI, model: str = "gpt-4.1") -> None:
+    def __init__(self, client: OpenAI, model: str = "gpt-4.1-mini"):
         self.client = client
         self.model = model
 
-    def plan(self, raw_query: str) -> SupervisionResult:
-        system = (
-            "Ты планировщик. По запросу пользователя составляешь ПЛАН РАБОТЫ "
-            "для одного универсального воркера.\n"
-            "Каждый шаг = виртуальный воркер: type + prompt.\n"
-            "Отвечай ТОЛЬКО JSON-массивом."
-        )
-
-        user = f"""
-Запрос пользователя:
-\"\"\"{raw_query}\"\"\"
-
-Разбей этот запрос на несколько логических шагов.
-Для каждого шага создай объект:
-
-{{
-  "type": "строка-метка, например 'research', 'stats_analyzer', 'plot_designer', 'image_extractor', 'table_extractor' и т.п.",
-  "prompt": "ПОЛНЫЙ текстовый промпт для LLM. Внутри промпта объясни воркеру:
-             - кто он (роль),
-             - что именно нужно сделать на этом шаге,
-             - как искать/обрабатывать данные (текст, таблицы, изображения, графики),
-             - в каком формате вернуть результат (текст, JSON, описание таблиц/графиков/изображений)."
-}}
-
-Требования:
-- Все инструкции для 'воркера' должны быть ВНУТРИ поля 'prompt'.
-- Поле 'type' — только метка для агрегации, воркер НЕ должен на него опираться.
-- Форматы вывода делай как можно более структурированными (JSON там, где возможно).
-
-Верни ТОЛЬКО JSON-массив таких объектов, без текста до или после.
-""".strip()
-
-        resp = self.client.chat.completions.create(
+    def plan(self, prompt: str) -> dict:
+        """Разбивает промпт на подзадачи и выбирает язык"""
+        response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": system},
-                {"role": "user", "content": user},
+                {
+                    "role": "system",
+                    "content": """You are a task planner. 
+                    1. Determine the language of the user's request.
+                    2. Break the task into 3–5 subtasks.
+                    3. Return JSON: {"language": "...", "subtasks": [{"type": "...", "prompt": "..."}]}"""
+                },
+                {"role": "user", "content": prompt}
             ],
-            temperature=0.2,
+            response_format={"type": "json_object"}
         )
+        
+        data = json.loads(response.choices[0].message.content)
 
-        content = resp.choices[0].message.content
-        try:
-            subtasks: List[WorkerSubTask] = json.loads(content)
-        except json.JSONDecodeError:
-            subtasks = [{
-                "type": "generic",
-                "prompt": (
-                    "Ты универсальный воркер. Выполни весь этот запрос целиком, "
-                    "найди и проанализируй все нужные данные, верни структурированный текстовый отчёт:\n"
-                    + raw_query
-                ),
-            }]
+        return {
+            "subtasks": [
+                {"type": sub.get("type", "research"), "prompt": sub.get("prompt", "")}
+                for sub in data.get("subtasks", [])
+            ],
+            "final_lang": data.get("language", "English")
+        }
 
-        return SupervisionResult(raw_query=raw_query, subtasks=subtasks)
-
-    def save_plan(self, plan: SupervisionResult, path: Path | None = None) -> Path:
-        if path is None:
-            ts = int(time.time())
-            path = Path("./outputs") / f"plan_{ts}.json"
+    def save_plan(self, plan: dict) -> Path:
+        ts = int(time.time())
+        path = Path("./outputs") / f"plan_{ts}.json"
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("w", encoding="utf-8") as f:
-            json.dump(
-                {"raw_query": plan.raw_query, "subtasks": plan.subtasks},
-                f,
-                ensure_ascii=False,
-                indent=2,
-            )
-        print("PLAN SAVED TO:", path)
+            json.dump(plan, f, ensure_ascii=False, indent=2)
+        print(f"PLAN SAVED TO: {path}")
         return path

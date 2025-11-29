@@ -1,104 +1,94 @@
-from dataclasses import dataclass
-from pathlib import Path
 from typing import List
-
-from fastapi import WebSocket
 from openai import OpenAI
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
+from pathlib import Path
+import time
+
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
 from .worker import WorkerResult
 
 
-@dataclass
-class AggregationResult:
-    final_text: str
-    pdf_path: Path
+class AggregatorResult:
+    def __init__(self, content: str, pdf_path: Path):
+        self.content = content
+        self.pdf_path = pdf_path
 
 
 class Aggregator:
-    def __init__(self, client: OpenAI, model: str = "gpt-4.1-mini") -> None:
+    def __init__(self, client: OpenAI, model: str = "gpt-4.1-mini"):
         self.client = client
         self.model = model
 
-    def _build_aggregator_prompt(self, results: List[WorkerResult]) -> str:
-        import json
-        return f"""
-Тебе даётся список промежуточных результатов разных типов воркеров.
-Нужно:
-- убрать повторы и мусор,
-- собрать один краткий, структурированный отчёт,
-- выделить ключевые выводы, цифры, описания графиков/таблиц.
+        # Путь к шрифту относительно файла agregator.py
+        font_path = Path(__file__).parent / "fonts" / "DejaVuSans.ttf"
+        pdfmetrics.registerFont(TTFont("DejaVu", str(font_path)))
 
-Входные данные (JSON):
-{json.dumps(results, ensure_ascii=False, indent=2)}
+    def aggregate(self, results: List[WorkerResult], lang: str = "English") -> AggregatorResult:
+        formatted = "\n\n".join([
+            f"### {r['type']}\n{r['result']}"
+            for r in results
+        ])
 
-Выведи чистый текст отчёта с заголовками и списками. Без лишних комментариев.
-""".strip()
-
-    # ----- Обычный режим -----
-    def aggregate(self, results: List[WorkerResult]) -> AggregationResult:
-        prompt = self._build_aggregator_prompt(results)
-        completion = self.client.chat.completions.create(
+        response = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": "Ты редактор отчётов. Делаешь текст чистым и структурированным."},
-                {"role": "user", "content": prompt},
+                {
+                    "role": "system",
+                    "content": f"You are a professional report writer. Combine these sections in {lang}."
+                },
+                {
+                    "role": "user",
+                    "content": formatted
+                }
             ],
-            temperature=0.2,
+            temperature=0.7,
             max_tokens=2000,
         )
-        final_text = completion.choices[0].message.content.strip()
-        pdf_path = self._save_pdf(final_text)
-        return AggregationResult(final_text=final_text, pdf_path=pdf_path)
 
-    # ----- Режим с WebSocket-логами -----
-    async def aggregate_ws(
-        self, results: List[WorkerResult], ws: WebSocket
-    ) -> AggregationResult:
-        await ws.send_text("aggregator: комбинирую всю информацию…")
-        prompt = self._build_aggregator_prompt(results)
-        completion = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": "Ты редактор отчётов. Делаешь текст чистым и структурированным."},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=0.2,
-            max_tokens=2000,
-        )
-        final_text = completion.choices[0].message.content.strip()
-        await ws.send_text("aggregator: текст собран, конвертирую в PDF…")
-        pdf_path = self._save_pdf(final_text)
-        return AggregationResult(final_text=final_text, pdf_path=pdf_path)
+        final_content = response.choices[0].message.content
+        pdf_path = self._save_to_pdf(final_content)
+        return AggregatorResult(final_content, pdf_path)
 
-    def _save_pdf(self, text: str) -> Path:
-        output_dir = Path("./outputs")
-        output_dir.mkdir(parents=True, exist_ok=True)
-        pdf_path = output_dir / "report.pdf"
+    def _save_to_pdf(self, content: str) -> Path:
+        ts = int(time.time())
+        pdf_path = Path("./outputs") / f"report_{ts}.pdf"
+        pdf_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # юникод-шрифт
-        pdfmetrics.registerFont(
-            TTFont("DejaVu", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+        doc = SimpleDocTemplate(
+            str(pdf_path),
+            pagesize=letter,
+            topMargin=0.5 * inch,
+            bottomMargin=0.5 * inch,
         )
 
-        c = canvas.Canvas(str(pdf_path), pagesize=A4)
-        c.setFont("DejaVu", 10)
-        width, height = A4
-        x, y = 50, height - 50
+        styles = getSampleStyleSheet()
+        styles["Normal"].fontName = "DejaVu"
+        styles["Heading1"].fontName = "DejaVu"
 
-        for line in text.splitlines():
-            if not line:
-                y -= 14
+        title_style = ParagraphStyle(
+            "Title",
+            parent=styles["Heading1"],
+            fontName="DejaVu",
+            fontSize=22,
+            alignment=1,
+            spaceAfter=20,
+        )
+
+        story = []
+        story.append(Paragraph("Research Report", title_style))
+        story.append(Spacer(1, 0.3 * inch))
+
+        for line in content.split("\n"):
+            if line.strip():
+                story.append(Paragraph(line, styles["Normal"]))
             else:
-                c.drawString(x, y, line[:150])
-                y -= 14
-            if y < 50:
-                c.showPage()
-                c.setFont("DejaVu", 10)
-                y = height - 50
+                story.append(Spacer(1, 0.15 * inch))
 
-        c.save()
+        doc.build(story)
+        print(f"PDF SAVED TO: {pdf_path}")
         return pdf_path
