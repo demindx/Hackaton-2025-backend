@@ -1,12 +1,15 @@
 from dataclasses import dataclass
 from typing import TypedDict, List
-from openai import OpenAI
+from pathlib import Path
 import json
+import time
+
+from openai import OpenAI
 
 
 class WorkerSubTask(TypedDict):
-    type: str       # имя "виртуального воркера"
-    prompt: str     # полный промпт для этого воркера
+    type: str      # метка виртуального "воркера"
+    prompt: str    # ПОЛНЫЙ промпт для LLM
 
 
 @dataclass
@@ -22,10 +25,10 @@ class Supervisor:
 
     def plan(self, raw_query: str) -> SupervisionResult:
         system = (
-            "Ты планировщик. Твоя задача — по запросу пользователя "
-            "составить ПЛАН РАБОТЫ для одного универсального воркера.\n"
-            "Воркеров как кодовых сущностей не существует — есть только типы задач и промпты.\n"
-            "Каждый элемент плана — это виртуальный 'воркер': type + prompt."
+            "Ты планировщик. По запросу пользователя составляешь ПЛАН РАБОТЫ "
+            "для одного универсального воркера.\n"
+            "Каждый шаг = виртуальный воркер: type + prompt.\n"
+            "Отвечай ТОЛЬКО JSON-массивом."
         )
 
         user = f"""
@@ -40,14 +43,14 @@ class Supervisor:
   "prompt": "ПОЛНЫЙ текстовый промпт для LLM. Внутри промпта объясни воркеру:
              - кто он (роль),
              - что именно нужно сделать на этом шаге,
-             - как искать/обрабатывать данные,
+             - как искать/обрабатывать данные (текст, таблицы, изображения, графики),
              - в каком формате вернуть результат (текст, JSON, описание таблиц/графиков/изображений)."
 }}
 
 Требования:
 - Все инструкции для 'воркера' должны быть ВНУТРИ поля 'prompt'.
 - Поле 'type' — только метка для агрегации, воркер НЕ должен на него опираться.
-- Форматы вывода (особенно для таблиц, графиков, диаграмм) делай как можно более структурированными (JSON).
+- Форматы вывода делай как можно более структурированными (JSON там, где возможно).
 
 Верни ТОЛЬКО JSON-массив таких объектов, без текста до или после.
 """.strip()
@@ -65,7 +68,6 @@ class Supervisor:
         try:
             subtasks: List[WorkerSubTask] = json.loads(content)
         except json.JSONDecodeError:
-            # fallback: один универсальный шаг, если модель накосячила с JSON
             subtasks = [{
                 "type": "generic",
                 "prompt": (
@@ -76,3 +78,18 @@ class Supervisor:
             }]
 
         return SupervisionResult(raw_query=raw_query, subtasks=subtasks)
+
+    def save_plan(self, plan: SupervisionResult, path: Path | None = None) -> Path:
+        if path is None:
+            ts = int(time.time())
+            path = Path("./outputs") / f"plan_{ts}.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(
+                {"raw_query": plan.raw_query, "subtasks": plan.subtasks},
+                f,
+                ensure_ascii=False,
+                indent=2,
+            )
+        print("PLAN SAVED TO:", path)
+        return path

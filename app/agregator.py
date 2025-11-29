@@ -1,12 +1,14 @@
-# app/agregator.py
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
+
+from fastapi import WebSocket
 from openai import OpenAI
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
+
 from .worker import WorkerResult
 
 
@@ -17,7 +19,7 @@ class AggregationResult:
 
 
 class Aggregator:
-    def __init__(self, client: OpenAI, model: str = "gpt-4.1") -> None:
+    def __init__(self, client: OpenAI, model: str = "gpt-4.1-mini") -> None:
         self.client = client
         self.model = model
 
@@ -25,18 +27,24 @@ class Aggregator:
         import json
         return f"""
 Тебе даётся список промежуточных результатов разных типов воркеров.
-Собери из них один чистый, структурированный, краткий отчёт.
+Нужно:
+- убрать повторы и мусор,
+- собрать один краткий, структурированный отчёт,
+- выделить ключевые выводы, цифры, описания графиков/таблиц.
+
 Входные данные (JSON):
 {json.dumps(results, ensure_ascii=False, indent=2)}
-Выведи только финальный текст отчёта.
+
+Выведи чистый текст отчёта с заголовками и списками. Без лишних комментариев.
 """.strip()
 
+    # ----- Обычный режим -----
     def aggregate(self, results: List[WorkerResult]) -> AggregationResult:
         prompt = self._build_aggregator_prompt(results)
         completion = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": "Ты редактор отчётов. Делаешь текст чистым и структурированным. Если текст становится длинным, то переносишь строку"},
+                {"role": "system", "content": "Ты редактор отчётов. Делаешь текст чистым и структурированным."},
                 {"role": "user", "content": prompt},
             ],
             temperature=0.2,
@@ -46,12 +54,32 @@ class Aggregator:
         pdf_path = self._save_pdf(final_text)
         return AggregationResult(final_text=final_text, pdf_path=pdf_path)
 
+    # ----- Режим с WebSocket-логами -----
+    async def aggregate_ws(
+        self, results: List[WorkerResult], ws: WebSocket
+    ) -> AggregationResult:
+        await ws.send_text("aggregator: комбинирую всю информацию…")
+        prompt = self._build_aggregator_prompt(results)
+        completion = self.client.chat.completions.create(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": "Ты редактор отчётов. Делаешь текст чистым и структурированным."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=0.2,
+            max_tokens=2000,
+        )
+        final_text = completion.choices[0].message.content.strip()
+        await ws.send_text("aggregator: текст собран, конвертирую в PDF…")
+        pdf_path = self._save_pdf(final_text)
+        return AggregationResult(final_text=final_text, pdf_path=pdf_path)
+
     def _save_pdf(self, text: str) -> Path:
         output_dir = Path("./outputs")
         output_dir.mkdir(parents=True, exist_ok=True)
         pdf_path = output_dir / "report.pdf"
 
-        # Юникод-шрифт (важно для русского текста)
+        # юникод-шрифт
         pdfmetrics.registerFont(
             TTFont("DejaVu", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
         )
