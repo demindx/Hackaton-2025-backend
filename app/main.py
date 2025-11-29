@@ -11,10 +11,10 @@ app = FastAPI()
 client = OpenAI(api_key=config.openai_api_key)
 @app.get("/ask")
 def ask_gpt(prompt: str = Query(...)):
-    print(">>> PROMPT FROM CLIENT:", prompt)
+    print(">>> PROMPT FROM CLIENTdddd:", prompt)
 
     completion = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4.1",
         messages=[
             {"role": "user", "content": prompt}
         ]
