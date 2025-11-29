@@ -2,15 +2,13 @@ from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from openai import OpenAI
 from dotenv import load_dotenv
+from .config import config
 import os
 
 app = FastAPI()
 
 
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
-
-client = OpenAI(api_key=api_key)
+client = OpenAI(api_key=config.openai_api_key)
 @app.get("/ask")
 def ask_gpt(prompt: str = Query(...)):
     print(">>> PROMPT FROM CLIENT:", prompt)
