@@ -1,0 +1,7 @@
+[
+  {
+    "type": "clarification",
+    "prompt": "Clarify the user's intent or provide more context since the input '123123' is ambiguous and does not specify a clear request.",
+    "result": "The input \"123123\" is ambiguous and does not clearly indicate what you need help with. Could you please provide more context or clarify your request? For example, are you asking about a code snippet, a specific error, a number sequence meaning, or something else? This will help me assist you better."
+  }
+]

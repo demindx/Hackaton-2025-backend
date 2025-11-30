@@ -1,0 +1,9 @@
+{
+  "subtasks": [
+    {
+      "type": "clarification",
+      "prompt": "Уточнити, що саме користувач хоче дізнатися або зробити з терміном 'фіва'."
+    }
+  ],
+  "final_lang": "Ukrainian"
+}

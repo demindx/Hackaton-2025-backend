@@ -1,0 +1,13 @@
+{
+  "subtasks": [
+    {
+      "type": "clarification",
+      "prompt": "Clarify the user's intent or meaning behind the input '12312312'."
+    },
+    {
+      "type": "data_interpretation",
+      "prompt": "Determine if '12312312' corresponds to any specific code, date, or identifier relevant to the user's context."
+    }
+  ],
+  "final_lang": "Unknown"
+}

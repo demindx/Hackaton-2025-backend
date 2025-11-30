@@ -1,0 +1,9 @@
+{
+  "subtasks": [
+    {
+      "type": "translation_check",
+      "prompt": "Check if the user's message contains offensive language and determine an appropriate, respectful response."
+    }
+  ],
+  "final_lang": "Russian"
+}

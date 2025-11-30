@@ -1,0 +1,21 @@
+{
+  "subtasks": [
+    {
+      "type": "research",
+      "prompt": "Explain the basic gameplay mechanics of Fortnite, including the main game modes such as Battle Royale and Creative."
+    },
+    {
+      "type": "research",
+      "prompt": "Describe the controls and user interface for playing Fortnite on different platforms (PC, console, mobile)."
+    },
+    {
+      "type": "research",
+      "prompt": "Provide tips on basic strategies and building techniques essential for success in Fortnite."
+    },
+    {
+      "type": "research",
+      "prompt": "Outline how to get started with Fortnite, including account creation, downloading the game, and joining matches."
+    }
+  ],
+  "final_lang": "English"
+}

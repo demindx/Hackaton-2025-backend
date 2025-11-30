@@ -1,0 +1,13 @@
+{
+  "subtasks": [
+    {
+      "type": "clarification",
+      "prompt": "Clarify the meaning or intention behind the input '1234'."
+    },
+    {
+      "type": "interpretation",
+      "prompt": "Determine if '1234' corresponds to a numerical code, sequence, or identifier requiring further action."
+    }
+  ],
+  "final_lang": "English"
+}

@@ -1,0 +1,9 @@
+{
+  "subtasks": [
+    {
+      "type": "clarification",
+      "prompt": "Clarify the user's input as it appears to be nonsensical or a typo. Ask the user to provide more information or restate their request clearly."
+    }
+  ],
+  "final_lang": "Unknown"
+}

@@ -1,0 +1,7 @@
+[
+  {
+    "type": "translation_check",
+    "prompt": "Check if the user's message contains offensive language and determine an appropriate, respectful response.",
+    "result": "Please provide the user's message you want me to check for offensive language. Once I have the message, I can analyze it and suggest an appropriate, respectful response."
+  }
+]
