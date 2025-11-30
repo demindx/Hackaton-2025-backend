@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Clarify the user's request to understand what 'sdf' refers to or what they need help with."
-    }
-  ],
-  "final_lang": "English"
-}

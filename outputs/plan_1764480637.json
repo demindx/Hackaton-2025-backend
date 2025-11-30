@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Clarify the user's intent or provide more context since the input '123123' is ambiguous and does not specify a clear request."
-    }
-  ],
-  "final_lang": "Unknown"
-}

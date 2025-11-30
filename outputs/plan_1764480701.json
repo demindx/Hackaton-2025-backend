@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "The user's input appears to be random or a typo. Clarify the user's request to understand what they need assistance with."
-    }
-  ],
-  "final_lang": "Unknown"
-}

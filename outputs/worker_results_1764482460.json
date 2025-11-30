@@ -1,7 +1,0 @@
-[
-  {
-    "type": "clarification",
-    "prompt": "Clarify the user's intent behind the message '123' to understand what they need help with.",
-    "result": "The user sent a very minimal and ambiguous message: \"123\". Based on the search results and common approaches to intent classification and user input understanding, the user's intent is unclear without additional context.\n\nKey points from the search results relevant to clarifying user intent:\n- Intent classification typically requires contextual clues or training data to map inputs to meaningful intents.\n- For ambiguous or numeric-only inputs like \"123,\" common possibilities include:\n  - The user might be testing the system or checking if it responds.\n  - They could be entering a code, ID number, or password.\n  - It might be a placeholder or accidentally sent input.\n- To clarify intent, a system or agent usually asks a follow-up question, such as:\n  - \"Could you please clarify what you need help with?\"\n  - \"Did you mean to enter a code or number?\"\n  - \"How can I assist you with '123'?\"\n\nTherefore, the best approach is to recognize that \"123\" alone does not provide enough information to determine user intent. The next step is to prompt the user to provide additional details to understand their needs."
-  }
-]

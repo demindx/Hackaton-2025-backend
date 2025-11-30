@@ -1,7 +1,0 @@
-[
-  {
-    "type": "clarification",
-    "prompt": "Clarify the meaning or context of the input '123123123' to understand the user's intent.",
-    "result": "The input '123123123' appears to be a numeric string of length 9. Based on the search results, such a numeric string could correspond to identifiers like a tax ID or a routing number, both of which are typically numeric and 9 digits long. Without additional context, it is likely that the user is referring to one of these numeric identifiers rather than random data. \n\nIf the user intends to input or verify a tax ID, routing number, or similar 9-digit numeric code, the string '123123123' might be a placeholder or example for such purposes. To clarify the user's intent, it would be helpful to ask whether they are using this number as an identifier (e.g., tax ID, routing number), for data entry, validation, or another specific use case."
-  }
-]

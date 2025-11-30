@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Ask the user to clarify or provide more context about 'іва' to understand what they need."
-    }
-  ],
-  "final_lang": "Ukrainian"
-}

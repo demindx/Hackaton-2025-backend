@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Clarify the user's intended topic or question based on the input 'sdfsdfsdf'."
-    }
-  ],
-  "final_lang": "Unknown"
-}

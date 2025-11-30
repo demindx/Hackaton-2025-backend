@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "The user's input 'fg' is unclear. Clarify what the user intends to ask or accomplish."
-    }
-  ],
-  "final_lang": "Unknown"
-}

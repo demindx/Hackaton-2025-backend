@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "information_request",
-      "prompt": "Retrieve the current weather in Košice."
-    }
-  ],
-  "final_lang": "Russian"
-}

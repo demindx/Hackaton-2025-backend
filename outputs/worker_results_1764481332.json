@@ -1,7 +1,0 @@
-[
-  {
-    "type": "clarification",
-    "prompt": "Clarify the user's intent behind the input '1' to understand what task or information is being requested.",
-    "result": "The input \"1\" is very minimal and ambiguous on its own, so the user's intent behind it is unclear without additional context. Based on principles of user intent recognition, possible interpretations include:\n\n- The user might be selecting an option \"1\" from a numbered list or menu.\n- The user might be requesting information related to the number 1 (e.g., definition, mathematical properties).\n- The user might be signaling agreement or confirmation (e.g., \"press 1 to confirm\").\n- The user might have accidentally sent an incomplete input.\n\nSince effective intent recognition requires contextual clues, clarifying questions or additional input from the user would help. For example, asking \"Could you please clarify what you mean by '1'?\" or \"Are you selecting option 1 from a list or asking about the number 1?\" would help disambiguate the intent.\n\nIn summary, without further context, the intent behind \"1\" cannot be determined definitively. It is important to prompt the user for more information to understand their goal better."
-  }
-]

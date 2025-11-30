@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "fetch_weather",
-      "prompt": "Получить текущую погоду в городе Кошице"
-    }
-  ],
-  "final_lang": "Russian"
-}

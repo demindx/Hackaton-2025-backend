@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Clarify the user's intent behind the message '123' to understand what they need help with."
-    }
-  ],
-  "final_lang": "English"
-}

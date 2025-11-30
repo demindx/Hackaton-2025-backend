@@ -1,7 +1,0 @@
-[
-  {
-    "type": "clarification",
-    "prompt": "Clarify the context or objective related to the input '123' to understand the user's intent.",
-    "result": "The input \"123\" by itself is ambiguous without additional context. To clarify your intent, here are some common possibilities and related questions:\n\n- Are you referring to the number \"123\" for a mathematical or programming purpose? (e.g., input parsing, calculations)\n- Is \"123\" an identifier, code, or reference number you want information or actions about?\n- Are you looking to process or classify this input in a chatbot or AI system, needing intent recognition?\n- Do you want help handling or validating numeric input in code or an application?\n\nPlease provide more details or specify your objective with \"123\" so I can assist you accurately. Meanwhile, I assume you want to understand how to interpret or handle such ambiguous numeric inputs effectively."
-  }
-]

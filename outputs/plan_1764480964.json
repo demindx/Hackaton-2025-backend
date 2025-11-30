@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "The user's input 'sdfdsf' is unclear or possibly a typo. Clarify the user's intended request or ask them to provide more details."
-    }
-  ],
-  "final_lang": "Unknown"
-}

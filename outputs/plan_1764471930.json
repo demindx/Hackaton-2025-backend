@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "information_request",
-      "prompt": "Определить текущую дату."
-    }
-  ],
-  "final_lang": "Russian"
-}

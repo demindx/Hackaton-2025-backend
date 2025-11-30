@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "retrieve_weather",
-      "prompt": "Получить текущие данные о погоде в городе Кошице."
-    }
-  ],
-  "final_lang": "Russian"
-}

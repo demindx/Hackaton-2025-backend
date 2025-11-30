@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Clarify the user's intent or request since the input 'asdfdasdf' is unclear or appears to be random characters."
-    }
-  ],
-  "final_lang": "English"
-}

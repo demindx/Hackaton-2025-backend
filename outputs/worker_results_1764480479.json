@@ -1,7 +1,0 @@
-[
-  {
-    "type": "clarification",
-    "prompt": "Clarify the user's request or context for '123' to understand their intent.",
-    "result": "The term \"123\" by itself is ambiguous without context. It could be:\n\n- An identifier or ID (e.g., user ID 123 in a REST API endpoint like /users/123)\n- A numerical input or code\n- Part of a data model or parameter value\n\nTo better understand your intent with \"123,\" could you please clarify:\n\n- Are you referring to an ID in a URL or API context?\n- Is \"123\" a value you want explained or processed?\n- Are you asking about the significance of \"123\" in some programming, data, or conversational context?\n- Or something else entirely?\n\nProviding a bit more detail will help me give a precise and relevant response."
-  }
-]

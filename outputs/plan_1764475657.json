@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "clarification",
-      "prompt": "Clarify the context or objective related to the input '123' to understand the user's intent."
-    }
-  ],
-  "final_lang": "English"
-}

@@ -1,9 +1,0 @@
-{
-  "subtasks": [
-    {
-      "type": "search",
-      "prompt": "Find today's date according to reliable internet sources"
-    }
-  ],
-  "final_lang": "Russian"
-}
